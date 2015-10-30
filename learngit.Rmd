@@ -16,7 +16,7 @@ msysgit是Windows版的Git，从http://msysgit.github.io/下载，然后按默�
 
 ![alt text](http://www.liaoxuefeng.com/files/attachments/001384907073134ef6feff559cf4ce3a2c5c588d2831c0a000/0)
 
-## 2.git姓名和网址设置
+## 2.初始化git姓名和网址设置
 
 $ git config --global user.name "Your Name"
 
@@ -59,7 +59,22 @@ $git log  #查看git状态
 
 $ git rm –cached readme.txt  #仅在暂存区删除，保留文件在当前目录，不再跟踪
 
-$
+
+* 回拨仓库状态
+
+$git log #查看状态
+
+通过git log可能会发现有几个版本，用下面的句子看情况会舒服点
+
+$ git log -- pretty=oneline  #查看git状态，一行一行显示
+
+$ git -hard HEAD^ #往前回拨一个状态
+
+$ git -hard HEAD^^ #往前回拨两个状态
+
+HEAD表示当前状态，HEAD^ 是前一个状态，HEAD^^ 往前两个状态，HEAD100往前100个状态
+
+$ git reflog  #记录操作历史的每一条记录
 
 ## 4.远程到仓库
 
@@ -115,10 +130,96 @@ $ git push origin master
 
 $ git clone git@github.com:michaelliao/gitskills.git
 
+## 5.文件更新回撤删除
+
+对readme.txt中再新增两行,查看git现在的状态
+
+$ git status
+```{r,eval=FALSE}
+ On branch master
+ Changes not staged for commit:
+ (use "git add <file>..." to update what will be committed)
+ (use "git checkout -- <file>..." to discard changes in working directory)
+  modified:   readme.txt
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+
+从提示来看，告诉我们，readme.txt被修改了，但是还没有添加到缓存区内
+
+$ git diff #查看文件的变化
+
+```{r,eval=FALSE}
+diff --git a/readme.txt b/readme.txt
+index d55a7b6..75a0946 100644
+--- a/readme.txt
++++ b/readme.txt
+@@ -1,4 +1,2 @@
+-Git is a version control system.
+-Git is free software.
+-Git is a distributed version control system.
+-Git is free software.
+\ No newline at end of file
++Git is a distributed version control system.
++Git is free software.
+\ No newline at end of file
+
+```
+
+可以看添加了两行：
+
+```{r,eval=FALSE}
+Git is a distributed version control system.
+Git is free software.
+```
+$git add readme.txt  #添加到缓存区
+
+查看这个时候的仓库状态
+
+$ git status
+```{r,eval=FALSE}
+
+    git commit --amend --reset-author
+
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+
+```
+
+$git commit -m "添加到工作区，再看下状态是否有变化" 
+
+查看这个时候的仓库状态
+
+$ git status
+
+```{r,eval=FALSE}
+$ git status
+On branch master
+nothing to commit, working directory clean
+
+```
+
+Git告诉我们当前没有需要提交的修改，而且，工作目录是干净（working directory clean）的。
 
 
 
-## 5.库基本的分支管理
+
+$ git checkout --file #丢弃工作区内修改
+
+$ rm readme.txt  #在本地数据库里删除readme.txt
+
+如果这个时候远程的仓库里还没有同步，想在本地恢复这个文件,操作如下
+
+$ git checkout -- readme.txt #从远程拷贝readme.txt到本地
+
+
+
+
+
+$ git clone git@github.com:michaelliao/gitskills.git
+
+
+## 6.库基本的分支管理
 
 创建一个分支 
 
