@@ -1,0 +1,9 @@
+{
+    "path" : "D:/Git/stock",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
