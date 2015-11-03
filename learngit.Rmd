@@ -221,33 +221,23 @@ $ git clone git@github.com:michaelliao/gitskills.git
 
 ## 6.库基本的分支管理
 
-创建一个分支 
+Git鼓励大量使用分支：
 
-git branch iss53
-切换工作目录到iss53
+查看分支：git branch
 
-git chekcout iss53
-将上面的命令合在一起，创建iss53分支并切换到iss53
+创建分支：git branch <name>
 
-git chekcout –b iss53
-合并iss53分支，当前工作目录为master
+切换分支：git checkout <name>
 
-git merge iss53
-合并完成后，没有出现冲突，删除iss53分支
+创建+切换分支：git checkout -b <name>  #b==branch
 
-git branch –d iss53
-拉去远程仓库的数据，语法为 git fetch [remote-name]
+合并某分支到当前分支：git merge <name>
 
-git fetch
-fetch 会拉去最新的远程仓库数据，但不会自动到当前目录下，要自动合并
+删除分支：git branch -d <name>
 
-git pull
-查看远程仓库的信息
 
-git remote show origin
-建立本地的dev分支追踪远程仓库的develop分支
 
-git checkout –b dev origin/develop
+
 
 
 
