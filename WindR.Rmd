@@ -1,0 +1,190 @@
+---
+title: "WindR"
+author: "daigazi"
+date: "2015年11月4日"
+output: html_document
+---
+```{r}
+library(knitr)
+opts_chunk$set(comment=NA, fig.width=6, fig.height=6,cache = TRUE)
+```
+
+# 操作Wind
+
+## 1.启动
+```{r}
+library(WindR) #加载windR包
+w.start(waitTime =60,showmenu = FALSE) #启动客户端，延时启动60秒，不显示菜单
+```
+
+
+## 2.菜单栏操作
+```{r}
+w.menu( )
+w.menu("wsd")  #只加载wsd模块
+w.menu()  #第二次运行menu则关闭菜单栏
+```
+
+
+
+## 3.连接服务器
+```{r,eval=FALSE,echo=TRUE}
+w.isconnected()  #测试是否连接正常
+w.tlogon(BrokerID="00000010", DepartmentID='0', LogonAccount='M:1355995897001', Password="123456", AccountType="SHSZ")  #登录个人量化模拟交易平台
+#模拟交易退出
+w.tlogout() #退出一个账户
+w.tlogon(BrokerID="00000010", DepartmentID='0',
+         LogonAccount=c('M:1355995897001',"M:1355995897002"), Password="123456", AccountType=c("SHSZ","SHF"))  #通过向量的形式，可以同时登录多个账户
+w.tlogout(LogonID = c(0,1)) #两个账户
+```
+相关的账号信息可以见[linked phrase](http://snap.windin.com/dajiangzhang/q?529d26bf-7b34-46b1-bc92-ff9a2494b0a6)
+
+# 获取数据
+* WindR读取数据通过下面7个函数实现的。
++ w.wsd     读取历史序列数据,包括日间的行情数据，基本面数据以及技术数据指标。
++ w.wss     读取股票、债券、商品等的基本面静态数据。
++ w.wst      盘口买卖十档快照数据和分时成交数据。
++ w.wsi      读取分钟级别历史及当天行情数据。
++ w.wsq     读取证券实时行情数据及技术指标。
++ w.wset     读取板块成份、指数成份权重等数据。
++ w.wpf      获取资产管理、组合管理相关信息。
++ w.tdays     返回区间内的日期序列
++ w.tdaysoffset返回某个偏移值对应的日期
++ w.tdayscount返回某个区间内日期数量
+
+## 1.时间格式转换
+
+```{r}
+data<-w.wss("600000.SH,000002.SZ","last_trade_day,pre_close")
+#取两支股票最近交易日，以及前收盘价 
+
+ w.asDateTime(data$Data[,2]) 
+ #转换成时间格式，精确到分秒
+w.asDateTime(data$Data[,2],asdate=T)
+#转换成日期形式，精确到天
+
+```
+
+##  2.w.wsd：获取历史序列数据 
+该命令用来获取选定证券品种的历史序列数据，包括日间的`行情数据`、`基本面数据`以及`技术数据指标`。用户可以使用?w.wsd 查看命令说明。
+
+命令原型为：data<- w.wsd(品种代码,指标,开始日期,结束日期,可选参数)； 
+
+返回参数为： 
+
+data$Data 返回的序列数据，为 data.frame 格式； 
+
+               data$Code 数据对应的WindCode代码； 
+               
+               data$ErrorCode 命令是否成功的错误码，0表示成功。 
+```{r}
+#提取的行情数据
+fields=c("open","close","high")  #字段不区分大小写
+dat=w.wsd(codes = "600000.SH",fields=fields,beginTime = "20150701",endTime =Sys.Date() ) #提取浦发银行数据
+str(dat)
+```
+注：1）一次只能一个品种，并且品种名带有“.SH”等后缀；  
+
+2）指标和可选参数也可以用数组实现； 
+
+3）日期支持 R 中时间和日期格式； 
+
+4）可选参数有很多种； 
+
+5）用户可以用 w.menu('wsd')显示导航界面，帮助创建命令。 
+
+##  3. w.wsi：获取分钟数据
+
+该命令用来获取选定证券品种的`分钟K线数据`，包含历史和当天，分钟周期可以指定，技
+术指标参数可以自定义设置。用户可以使用?w.wsi 查看命令说明。
+
+命令原型为：data<- w.wsi(品种代码,指标,开始时间,结束时间,可选参数)； 
+
+返回参数为： 
+
+data$Data 返回的序列数据，为 data.frame 格式； 
+
+               data$Code 数据对应的WindCode代码；
+               
+               data$ErrorCode 命令是否成功的错误码，0表示成功。
+               
+```{r}
+fields="close"
+dat=w.wsi(codes = "600000.SH",fields = fields,beginTime = "20150714",endTime = Sys.Date()) #分钟收盘
+str(dat)  #dat#ErrorCode -40522017数据提取超限 
+```
+
+##  3. w.wst：获取日内 tick 级别数据
+
+该命令用来获取选定证券品种的日内盘口买卖十档快照数据和分时成交数据（tick 数据）。
+
+命令原型为：data<- w.wst(品种代码,指标,开始时间,结束时间,可选参数)； 
+
+目前只支持当天数据（假日可以取上一交易日数据），并且只有时间有意义，日期无意义。
+
+```{r}
+data<-w.wst("600000.SH","open",Sys.time()-2*3600,Sys.time())
+#取浦发银行 tick 数据信息 
+```
+
+## 4.w.wss：获历史截面数据 
+命令用来获取选定证券品种的历史截面数据，比如取沪深 300 只股票的 2012 年 3 季度的净利润财务指标数据。 
+
+```{r}
+data<-w.wss("600000.SH,000001.SZ","eps_ttm,orps,surpluscapitalps","rptDate=20121231") 
+#取浦发银行等财务数据信息 
+str(data)
+```
+
+## 5.w.wsq：获取和订阅实时行情数据 
+命令用来获取选定证券品种的当天实时指标数据，数据可以一次性请求，也可以通过订阅的方式获取。
+
+命令原型为：data<- w.wsq(品种代码,指标,可选参数,回调函数)； 
+
+```{r}
+w.wsq("600000.SH,000001.SZ","rt_last,rt_last_vol")#取浦发银行等股票当前行情信息 
+data<-w.wsq("600000.SH","rt_low,rt_last_vol",func=w.demoCallback)#订阅浦发银行等股票当前行情信息 
+w.cancelRequest(data$RequestID)#取消订阅 
+```
+
+## 6. w.wset：获取板块、指数等成分数据 
+命令用来获取数据集信息，包括板块成分、指数成分、ETF 申赎成分信息、分级基金明细、融资标的、融券标的、融资融券担保
+品、回购担保品、停牌股票、复牌股票、分红送转。
+
+命令原型为：data<- w.wset(数据集名称,可选参数)；
+```{r}
+data<-w.wset("SectorConstituent","date=20151104;sector=全部 A 股")#取全部 A 股股票代码、名称信息 
+#取沪深 300 指数中股票代码和权重 
+data<-w.wset("IndexConstituent","date=20130608;windcode=000300.SH;field=wind_code,i_weight") 
+#取停牌信息 
+w.wset("TradeSuspend","startdate=20130508;enddate=20130608;field=wind_code,sec_name,suspend_type,susp
+end_reason") 
+#取 ST 股票等风险警示股票信息 
+data<-w.wset("SectorConstituent","date=20130608;sector=风险警示股票;field=wind_code,sec_name") 
+```
+
+
+## 7. w.weqs：获取条件选股结果 
+```{r}
+
+```
+
+
+## 8.  w.wpf：获取资产管理、组合管理数据 
+
+用来读取交易账户与资管账户中的报表数据。
+
+```{r}
+
+```
+
+
+
+# 模拟交易
+
+```{r}
+
+
+
+```
+
