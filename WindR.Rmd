@@ -182,9 +182,56 @@ data<-w.wset("SectorConstituent","date=20130608;sector=风险警示股票;field=
 
 # 模拟交易
 
+## 1.  w.tlogon 交易登录 
+
 ```{r}
 
 
 
 ```
 
+
+## 2.   w.tlogout 交易登出 
+
+```{r}
+
+
+
+```
+
+
+## 3.   w.torder 委托下单 
+
+```{r}
+
+
+
+```
+
+
+## 4.   w.tcancel 撤销委托 
+
+```{r}
+
+
+
+```
+
+
+
+## 5. w.tquery 交易查询  
+
+```{r}
+
+
+
+```
+
+ 
+## 6. w.tdays, w.tdaysoffset,w.tdayscount：日期函数  
+
+```{r}
+
+
+
+```
