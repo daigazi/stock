@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"GetStockID\"\nauthor: \"daigazi\"\ndate: \"Wednesday, November 04, 2015\"\noutput: html_document\n---\n\nlibrary(RCurl)\nlibrary(stringr)\nlibrary(XML)",
+    "created" : 1446625053537.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1344455078",
+    "id" : "5C14874C",
+    "lastKnownWriteTime" : 1446625080,
+    "path" : "D:/Git/stock/GetStockID.Rmd",
+    "project_path" : "GetStockID.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

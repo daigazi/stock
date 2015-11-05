@@ -1,0 +1,10 @@
+---
+title: "GetStockID"
+author: "daigazi"
+date: "Wednesday, November 04, 2015"
+output: html_document
+---
+
+library(RCurl)
+library(stringr)
+library(XML)
