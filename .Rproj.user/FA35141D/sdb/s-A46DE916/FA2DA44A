@@ -1,0 +1,18 @@
+{
+    "contents" : "---\ntitle: \"XML\"\nauthor: \"daigazi\"\ndate: \"2015年11月4日\"\noutput: html_document\n---\n\n```{r,eval=FALSE}\nlibrary(kintr)\nopts_chunk$set(comment=NA, fig.width=6, fig.height=6,cache = TRUE)\n```\n\n\n\n```{r,eval=FALSE,echo=TRUE}\nlibrary(XML)\nlibrary(kintr)\nfileUrl <- \"http://www.w3schools.com/xml/simple.xml\"\ndoc <- xmlTreeParse(fileUrl,useInternal=TRUE)\nrootNode <- xmlRoot(doc)\nxmlName(rootNode)\nnames(rootNode)\n```\n\n```{r,eval=T,echo=TRUE}\nlibrary(XML)\nfileUrl <- \"http://www.w3schools.com/xml/simple.xml\"\ndoc <- xmlTreeParse(fileUrl,useInternal=TRUE)\nrootNode <- xmlRoot(doc)\nxmlName(rootNode)\n```\n\n\n```{r, echo=FALSE}\nplot(cars)\n```\n\n\n",
+    "created" : 1446648468783.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3536855941",
+    "id" : "FA2DA44A",
+    "lastKnownWriteTime" : 1446651622,
+    "path" : "D:/git/stock/learnXML.Rmd",
+    "project_path" : "learnXML.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}
