@@ -1,0 +1,17 @@
+{
+    "contents" : "#获取沪深股票的代码，用的是东方财富网的数据\n\n\n## 加载包\nlibrary(RCurl)\nlibrary(stringr)\nlibrary(XML)\n\n#网址\nurl=\"http://quote.eastmoney.com/stocklist.html\"\n\n#读入网页数据\nrawdat=getURL(url,.encoding=\"GB2312\")\n\n#整理数据\n\n#设置分离的字符串\npattern=\"http://quote.eastmoney.com/\"\n#分解原始数据\ntmp=strsplit(x=rawdat,split =pattern )[[1]]\n#提取含有</a></li>的部分\ntmp=rawdat1[grepl(pattern = \"</a></li>\",  tmp)]\n#进一步分解\ntmp=unlist(strsplit(tmp,\"</a></li>\"))\n\nind_sta=grep(pattern=\"201000\",tmp)\nind_end=grep(pattern=\"500159\",tmp)\ntable=tmp[seq(from=ind_sta,to=ind_end,by=2)]\ntable1=strsplit(table,\"\\r\\n\")\nCompany=data.frame(matrix(NA,ncol=2,nrow=length(seq_along(table1))))\nnames(Company)=c(\"company\",\"ID\")\nfor(i in seq_along(table1)){\n        company=unlist(strsplit(x=table1[[i]],split=\"[>()]\"))[2]\n        ID=unlist(strsplit(x=table1[[i]],split=\"[>()]\"))[3]\n        Company[i,]=c(company,ID)\n}\nrm(list=ls())\n#6开头为上海，0和3开头为深圳。\nkt=substr(x = Company$ID,start = 1,stop = 1)\nkt_ind=which(kt %in% c(\"6\",\"0\",\"3\"))\nkt=kt[kt_ind]\nCompany=Company[kt_ind,]\nCompany$SS_SZ=ifelse(kt %in% c(\"0\",\"3\"),\"SZ\",\"SS\")\nCompany$ID.SS_SZ=paste(Company$ID,\".\",Company$SS_SZ,sep = \"\")\n#筛选company里有“退市”两个字\nCompany=Company[-grep(pattern = \"退市\",Company$company),]\nsave.image(\"Company.RData\")\nwrite.csv(Company,\"company.csv\")\n\n\n\n\n#获取沪深股票的代码，用的是同花顺数据\nlibrary(RCurl)\nlibrary(stringr)\nrawdat=getURL(\"http://bbs.10jqka.com.cn/codelist.html\",.encoding=\"GBK\")\n#股票代码\npattern=\"target='_blank' title=\"\nrawdat1=strsplit(x = rawdat,split = pattern)[[1]]\nrawdat2=rawdat1[grep(pattern=\"</a></li>\",  rawdat1)]\ntmp=unlist(strsplit(rawdat2,\"</a></li>\"))\n",
+    "created" : 1446688310420.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "712639697",
+    "id" : "5633A5FC",
+    "lastKnownWriteTime" : 1446626398,
+    "path" : "D:/Git/stock/GetStockID.R",
+    "project_path" : "GetStockID.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

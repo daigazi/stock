@@ -1,0 +1,91 @@
+---
+title: "JSON"
+author: "daigazi"
+date: "Thursday, November 05, 2015"
+output: html_document
+---
+# JSON语法
+JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式，是一种`结构语言`,是常用的APIs格式之一`（application programming interfaces）`。
+语法形式有点像C语言等，主要格式是"firstName":"John".
+
+## JSON 语法规则
+
+* JSON 语法是 JavaScript 对象表示语法的子集。
++ 数据在键值对中
++ 数据由逗号分隔
++ 花括号保存对象
++ 方括号保存数组
+
+## JSON 名称/值对
+
+JSON 数据的书写格式是：名称/值对。名称/值对组合中的名称写在前面（在双引号中），值
+对写在后面(同样在双引号中)，中间用冒号隔开：
+
+*  `"firstName":"John"`
+这很容易理解，等价于这条 JavaScript 语句：`firstName="John"`
+
++ JSON 值
+
+        + JSON 值可以是：
+        + 数字（整数或浮点数）
+        + 字符串（在双引号中）
+        + 逻辑值（true 或 false）
+        + 数组（在方括号中）
+        + 对象（在花括号中）
+        + null
+示列如下：
+```{r,eval=FALSE}
+{
+    "people":[
+        {"firstName":"Brett","lastName":"McLaughlin","email":"aaaa"},
+        {"firstName":"Jason","lastName":"Hunter","email":"bbbb"},
+        {"firstName":"Elliotte","lastName":"Harold","email":"cccc"}
+    ]
+}
+```
+
+# 读取JSON例子
+
+## jsonlite包
+
+```{r,warning=F,message=FALSE}
+library(knitr)
+library(jsonlite)
+jsonData <- fromJSON("https://api.github.com/users/jtleek/repos")
+class(jsonData)
+library(pryr)
+otype(jsonData)
+names(jsonData)
+names(jsonData$owner) #jsonData$owner还是一个data.frame
+class(jsonData$owner)
+jsonData$owner$login
+
+```
+### 展开嵌套的数据框
+flattern(x,recursive = TRUE)
+
+* x        a data frame
+
+* recursive	flatten recursively
+```{r,eval=FALSE}
+class(flatten(jsonData))
+df=flatten(jsonData)
+str(df)
+which(names(df)=="html_url",arr.ind = T)
+which(names(jsonData)=="html_url",arr.ind = T)
+```
+
+
+
+## data.frame与JSON互转
+
+```{r}
+myjson <- toJSON(iris, pretty=TRUE)
+#cat(myjson) #输出符合JSON格式的文档
+#convert json back to object
+iris2 <- fromJSON(myjson)
+print(head(iris2))
+```
+
+
+
