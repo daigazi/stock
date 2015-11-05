@@ -6,33 +6,126 @@ output: html_document
 ---
 
 ```{r,eval=FALSE}
-library(kintr)
+library(knitr)
 opts_chunk$set(comment=NA, fig.width=6, fig.height=6,cache = TRUE)
 ```
 
+# XML
 
-
-```{r,eval=FALSE,echo=TRUE}
+```{r,XMLl,eval=T,echo=TRUE,highlight=TRUE}
 library(XML)
-library(kintr)
-fileUrl <- "http://www.w3schools.com/xml/simple.xml"
-doc <- xmlTreeParse(fileUrl,useInternal=TRUE)
-rootNode <- xmlRoot(doc)
+fileUrl <- "http://www.w3school.com.cn/example/xmle/simple.xml"
+doc <- xmlTreeParse(fileUrl,useInternal=TRUE) 
+rootNode <- xmlRoot(doc) #得到XML节点
 xmlName(rootNode)
-names(rootNode)
+names(rootNode) 
+rootNode[[1]]  #第一个names(rootNOde)标签里<food>的东西
+rootNode[[1]][[1]] #标签内第一行
+rootNode[[1]][[2]] #第二行
+rootNode[[2]]
+xmlSApply(X = rootNode,FUN = xmlValue) #对XML节点，利用xmlValue递归遍历整个文本，取标签里的值，最后用$连接各个值
+#X          the XMLNode on whose children the regular apply or sapply is to be performed
+#FUN        the function to apply to each child node. This is passed directly to the relevant apply function.
+
+#...	additional arguments to be given to each invocation of FUN. This is passed directly to the relevant apply function.
+
 ```
 
-```{r,eval=T,echo=TRUE}
+# XPath
+* /node Top level node
+* //node Node at any level
+* node[@attr-name] Node with an attribute name
+* node[@attr-name='bob'] Node with attribute name attr-name='bob'
+* Information from: [linked phrase](http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf)
+```{r,Xpath,eval=T,echo=TRUE,highlight=TRUE}
 library(XML)
-fileUrl <- "http://www.w3schools.com/xml/simple.xml"
-doc <- xmlTreeParse(fileUrl,useInternal=TRUE)
-rootNode <- xmlRoot(doc)
-xmlName(rootNode)
+fileUrl <- "http://www.w3school.com.cn/example/xmle/simple.xml"
+doc <- xmlTreeParse(fileUrl,useInternal=TRUE) 
+rootNode <- xmlRoot(doc) #得到XML节点
+xpathSApply(rootNode,"/food",xmlValue)  #顶层节点
+xpathSApply(rootNode,"//name",xmlValue) #次一层节点
+xpathSApply(rootNode,"//price",xmlValue) #次一层节点
+xpathSApply(doc,"//food[@class='price']",xmlValue) #对文档操作而不是节点文档，次一层节点,为什么返回的是空列表
+xpathSApply(doc,"//food[@class]",xmlValue) #次一层节点
+```
+# 案例
+```{r}
+fileUrl <- "http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens"
+doc <- htmlTreeParse(fileUrl,useInternal=TRUE)
+scores <- xpathSApply(doc,"//li[@class='score']",xmlValue) #对文档操作，而不是节点文件
+teams <- xpathSApply(doc,"//li[@class='team-name']",xmlValue)
+scores
+teams
 ```
 
+# XPath如东方财富网
+利用xpathSApply函数读入东方财富网的股票信息
+```{r,eval=F,echo=T,highlight=TRUE,error=TRUE}
+library(XML)
+fileUrl <- "http://quote.eastmoney.com/stocklist.html" #后缀是.html，因此应该用htmlTreeParse而不是xmlTreeParse
+doc <- xmlTreeParse(fileUrl,useInternal=TRUE,encoding = "GBK") #报错，这个网站出现nbsp（不间断间隔）、开始和结束标签不匹配等问题
 
-```{r, echo=FALSE}
-plot(cars)
+```
+
+# XPath读取同花顺网页数据
+利用xpathSApply函数读入同花顺股票信息
+
+```{r,eval=F,echo=T,highlight=TRUE,error=TRUE}
+library(XML)
+fileUrl <- "http://bbs.10jqka.com.cn/codelist.html"
+doc <- htmlTreeParse(fileUrl,useInternal=TRUE,encoding = "GBK")  #注意是htmlTreeParse
+rootnode=xmlRoot(doc)
+li=xpathSApply(doc,"//li",xmlValue) #发现读取回来的文字是乱码
+li_vec=unlist(li)
+li_vec=iconv(x = li_vec,from = "GBK",to = "UTF-8") #x 字符串向量，还是乱码
+# library(stringi)
+# enc=stri_enc_detect(li_vec)  #检测文档编码
+# li_vecstri_encode(li_vec,enc,"UTF-8")  #把文档转换成UTF-8格式
+write.csv( li_vec,"stockname.csv",fileEncoding="GBK")
+```
+使用Rcurl::getUrl读入数据后再用htmlTreeParse分析，重点是在读入数据的时候把数据类型转换
+
+```{r,error=TRUE}
+library(XML)
+library(RCurl)
+fileUrl <- "http://bbs.10jqka.com.cn/codelist.html"
+doc=getURL(url = fileUrl,.encoding = "GBK")
+class(doc) #发现doc是字符串，可以使用iconv函数转换成UTF-8格式
+doc=iconv(x = doc,from = "GBK",to = "UTF-8")
+doc=xmlTreeParse(file = doc,useInternalNodes = T) #报错，标签不匹配等
+rootnode=xmlRoot(doc) #直接取节点,因为doc是字符串不可行
+#查看xmlRoot的方法，可以发现没有xmlRoot.character这个方法
+
+```
+
+```{r,error=TRUE}
+library(XML)
+library(RCurl)
+url="https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+xData=xmlTreeParse( file = url,useInternal=TRUE) #报错
+#把url的https改成http就可以了
+url1="http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+doc=xmlTreeParse( file = url1,useInternal=TRUE)  
+rootnode=xmlRoot(doc)
+zipcode=xpathSApply(doc,"//zipcode",xmlValue)
+class(zipcode);typeof(zipcode)
+zipcode[zipcode=="21231"]
+```
+
+## 另一种方式
+```{r,error=TRUE}
+library(XML)
+library(RCurl)
+url1="https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+xData <- getURL(url1) #载入数据
+url="http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+xData <- getURL(url) #Changing https to http also seems to work.
+doc=xmlTreeParse( file = xData,useInternal=TRUE) #报错，这个网站出现nbsp（不间断间隔）、开始和结束标签不匹配等问题
+rootnode=xmlRoot(doc)
+zipcode=xpathSApply(doc,"//zipcode",xmlValue)
+class(zipcode);typeof(zipcode)
+zipcode[zipcode==21231,]
+
 ```
 
 

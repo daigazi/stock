@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"data.table\"\nauthor: \"daigazi\"\ndate: \"Thursday, November 05, 2015\"\noutput: html_document\n---\n# data.table\n\ndata.table是data.frame的继承，底层是用C语言写的，因此会比data.frame运行速度块，\n特别是在取子集、分组以及数据（变量）更新方面更为快速。\n\n## data.table建立\n\ndata.table的创建和data.frame形式一样\n```{r,message=FALSE,error=T}\nlibrary(data.table)\n#新建df\ndf=data.frame(a=sample(c(1:10),size = 20,replace = T),b=sample(letters[1:10],20,T))\n#新建dt\ndt=data.table(a=sample(c(1:10),size = 20,replace = T),b=sample(letters[1:10],20,T))\n```\n\n## data.table操作\n\ndata.table和data.frame对于行的操作是一样，但是对于列的操作，data.table对列的操作`虽然结果也不报错，但是也得不到想要的结果`。这个是data.table和data.frame的`主要区别之一`。\n```{r,message=FALSE,error=T}\n#把df转成dt\ndt2=as.data.table(x = df)\ndt\n#头几行\nhead(dt)\nhead(dt,3)\n\n#对行操作，取条件子集\ndt[dt$b==\"a\",] \ndt[3,]\ntables()  #data.table::tables(),查看当前环境中的dt数据有多少\n```\n\n\n## data.table与data.frame操作上差异\n\n### 1.数据框的取列方式不可用\n```{r,message=FALSE,error=T}\n\ndt[,1] #也不等于df[1,1]\ndt[,2] #不可行，返回2\ndt[,c(2,3)]  #不可行，返回c(2,3)\n#想要取dt的第一列\ndt[\"a\"] #报错\nmethods(\"[\") #可以看到 [.data.table*   \n#利用getS3method查看源代码     \n#getS3method(f = \"[\",class = \"data.table\")\n\n```\n如前文所说，data.table对列取子集得不到想要的结果，`原因是什么呢？`\n### 2.通过表达式计算变量值\n```{r}\ndt[,list(mean(a),length(b))] #返回a的均值和b向量的长度\ndt[,table(b)] #输出b的统计列表，类似于table(df$b)\ndt[,x:=a^2]\n```\n\n### 3.数据表的复制修改原则\n\n数据表是采用类似指针的形式，即如果\n\n>dt2=dt1\n\n,那么当调用dt2的时候，实际上只是指向dt1，并对dt1做修改；\n\n同理，如果dt1变了，那么输出dt2的时候，dt2还是等于dt1.\n\n想要新开辟一块内存地址，就需要\n\n>dt2=copy(dt1)\n\n这样dt1修改的时候dt2就不会变化了，具体过程如下\n```{r}\ndt2=dt \nhead(dt)\ndt2[1,]=c(30,\"x\")\nhead(dt) #dt发生变化\n\n#反之\ndt[1,1]=100\nhead(dt2)\n`\n\n## data.table的优点\n\n##",
+    "created" : 1446711103948.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1065614335",
+    "id" : "5BD144BC",
+    "lastKnownWriteTime" : 1446713598,
+    "path" : "D:/Git/stock/data_table.Rmd",
+    "project_path" : "data_table.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}
