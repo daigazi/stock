@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"学习路径\"\nauthor: \"daigazi\"\ndate: \"Thursday, November 05, 2015\"\noutput: html_document\n---\n\n这是个人学习过程的记录，目的是为了抓取网页数据，结合WindR建立一套自己的股票数据库，然后利用R的强大能力，建模分析，终极目标是可以形成研报，建立一套自己的股票交易系统。目标远大，长路漫漫！\n\n\n## 需要掌握的知识体系  \n\n------  \n### 1.R语言基础知识  \n        \n### 2.获取数据    \n        \n      1.WindR             \n      2.XML           \n      3.RCrul           \n      4.Rweibo  \n      5.httr\n      6.API\n      7.rvest               \n### 3.清洗整理数据\n        \n       1.data.table           \n       2.xlsx           \n       3.stringr            \n       4.正则表达式             \n       5.时间格式            \n       6.plyr           \n       7.Rwordseg \n       8.MySQL\n       9.MS sql        \n### 4.统计图表及展示     \n        \n        1.ggplot2              \n        2.quantmod           \n        3.shiny            \n        4.云图           \n### 5.统计知识  \n        1.探索性数据分析         \n        2.统计推断          \n        3.机器学习  \n### 6.可重复研究  \n        1.knitr          \n        2.LaTex          \n        3.pandoc \n### 7.产品数据开发  \n        1.R面向对象  \n        2.包的开发  \n### 8.网页数据储备 \n        1.html          \n        2.css          \n        3.xml          \n        4.JavaScript         \n        5.JSON               \n### 9.其他工具  \n        1.github        \n        2.git         \n        3.C++面向对象编程        \n        4.简单的JAVA操作  \n\n\n",
+    "created" : 1446713749283.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "934209204",
+    "id" : "41F1B50B",
+    "lastKnownWriteTime" : 1446775907,
+    "path" : "D:/Git/stock/readme.md",
+    "project_path" : "readme.md",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "markdown"
+}
