@@ -92,6 +92,15 @@ HTTP/1.1相较于HTTP/1.0协议的区别主要体现在：
 1. HTTP/vesion-number 表示HTTP协议的版本号
 2. status-code 和 message表示状态码以及状态信息
 
+### 消息报头
+* Server 服务器信息
+* Date  日期
+* Last-Modified 最近一次修改时间
+* Content-type 服务器告知浏览器自己的响应类型 如“text/html”
+* Connection  连接情况 "Keep-alive"
+* X-Powered-By  网站是用和什么技术开发的，比如python、php、Java等开发的
+* Content-Length 字符串长度
+* Set-Cookie    用于把cookie发送到服务器  
 # RCurl三大函数
 
 ## 1.getURL()
@@ -115,31 +124,30 @@ temp=getURL(url,debugfunction=d$update,verbose=T) #verbose=T 叠加信息
 d  
 d$value()
 cat(d$value()[1]) #服务器地址以及端口号
-cat(d$value()[2]) #服务器返回的头信息
-cat(d$value()[3]) #提交服务器返回的头信息
 
+cat(d$value()[3]) #提交服务器返回的头信息
+cat(d$value()[2]) #服务器返回的头信息
 
 ```
 
 - 再次运行下上一句函数，返回的信息会叠加
 ```{r}
 temp=getURL(url,debugfunction=d$update,verbose=T) #verbose=T 叠加信息
-cat(d$value()[1]) #服务器地址以及端口号
-cat(d$value()[2]) #服务器返回的头信息
-cat(d$value()[3]) #提交服务器返回的头信息
+cat(d$value()[1]) #叠加了一次
 ```
 
 - 如果verbose=F的话不会叠加
 ```{r}
 temp=getURL(url,debugfunction=d$update,verbose=F) 
-cat(d$value()[1]) #服务器地址以及端口号
-cat(d$value()[2]) #服务器返回的头信息
-cat(d$value()[3]) #提交服务器返回的头信
+cat(d$value()[1]) #还是两次
 ```
 
 - d$reset 重置d里的值
 ```{r}
 d$reset()
+cat(d$value()[1]) #重置了，空值
+temp=getURL(url,debugfunction=d$update,verbose=T) #verbose=T 叠加信息
+cat(d$value()[1]) #又记录了
 ```
 
 
