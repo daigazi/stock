@@ -1,0 +1,17 @@
+{
+    "contents" : "url=\"http://quotes.money.163.com/f10/zcfzb_601668.html#01c05\"\nlibrary(rvest)\nweb=read_html(url,encoding=\"UTF-8\")\npro=web %>%  html_nodes(\".td_1\") %>% html_text() #项目\npro=iconv(t,'utf-8','gbk') #乱码，转换输出格式\nt=web %>%  html_nodes(\".scr_table td:nth-child(1)\") %>% html_text()\n\ntablehead=web %>%  html_nodes(\"th\") %>% html_text()\ntablehead=iconv(tablehead,'utf-8','gbk') \n\ntable2=web %>%  html_nodes(\"#scrollTable td:nth-child(2)\") %>% html_text()\ntable2=iconv(table2,'utf-8','gbk') \n\n#模拟鼠标点击界面里\"下载数据\"这个功能\n#实际上就是跳入到\"http://quotes.money.163.com/service/zcfzb_601668.html\"这个页面\nx=web %>%  html_nodes(\"#downloadData\") %>% html_text() #项目\niconv(x,\"utf-8\",\"gbk\") #只返回“下载数据”这几个字\n\nurl=\"http://quotes.money.163.com/service/zcfzb_601668.html\"\nweb=read_html(url,encoding=\"utf-8\")\n\n\n",
+    "created" : 1448593884550.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "4119967594",
+    "id" : "41B97BDA",
+    "lastKnownWriteTime" : 578055781,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled2"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

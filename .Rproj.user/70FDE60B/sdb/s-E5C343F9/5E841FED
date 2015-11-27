@@ -1,0 +1,17 @@
+{
+    "contents" : "# CSS selectors ----------------------------------------------\nateam <- read_html(\"http://www.boxofficemojo.com/movies/?id=ateam.htm\")\nhtml_nodes(ateam, \"center\")\nhtml_nodes(ateam, \"center font\")\nhtml_nodes(ateam, \"center font b\")\n\n# But html_node is best used in conjunction with %>% from magrittr\n# You can chain subsetting:\nateam %>% html_nodes(\"center\") %>% html_nodes(\"td\")\nateam %>% html_nodes(\"center\") %>% html_nodes(\"font\")\nateam %>% html_nodes(\"center\") %>% html_nodes(\"font\") %>% html_nodes(\"b\")\n\n\n# When applied to a list of nodes, html_nodes() collapses output\n# html_node() throws an error\ntd <- ateam %>% html_nodes(\"center\") %>% html_nodes(\"td\")\ntd %>% html_nodes(\"font\")\n## Not run: \ntd %>% html_node(\"font\")\n\n## End(Not run)\n\n# To pick out an element at specified position, use magrittr::extract2\n# which is an alias for [[\nlibrary(magrittr)\nateam %>% html_nodes(\"table\") %>% extract2(1) %>% html_nodes(\"img\")\nateam %>% html_nodes(\"table\") %>% `[[`(1) %>% html_nodes(\"img\")\n\n# Find all images contained in the first two tables\nateam %>% html_nodes(\"table\") %>% `[`(1:2) %>% html_nodes(\"img\")\nateam %>% html_nodes(\"table\") %>% extract(1:2) %>% html_nodes(\"img\")\n\n# XPath selectors ---------------------------------------------\n# chaining with XPath is a little trickier - you may need to vary\n# the prefix you're using - // always selects from the root noot\n# regardless of where you currently are in the doc\nateam %>%\n        html_nodes(xpath = \"//center//font//b\") %>%\n        html_nodes(xpath = \"//b\")\n\n\nmovie <- read_html(\"http://www.imdb.com/title/tt1490017/\")\ncast <- html_nodes(movie, \"#titleCast span.itemprop\")\nhtml_text(cast)\nhtml_name(cast)\nhtml_attrs(cast)\nhtml_attr(cast, \"class\")",
+    "created" : 1448430732402.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "4252041083",
+    "id" : "5E841FED",
+    "lastKnownWriteTime" : 578055781,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
