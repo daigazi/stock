@@ -1,0 +1,159 @@
+
+
+
+```{r,echo=FALSE,message=FALSE,error=FALSE,eval=TRUE}
+library(rvest)
+library(RCurl)
+library(XML)
+library(knitr)
+opts_knit$set(cache=T,eval=T,echo=T)
+```
+
+# 首页概览
+
+```{r,opts}
+wangyistock="http://quotes.money.163.com/f10/zcfzb_"
+stockNO="600000"
+page="01c05"
+url=paste(wangyistock,stockNO,".html#",page,sep = "")
+```
+
+```{r}
+page="01c05"
+url=paste(wangyistock,stockNO,".html#",page,sep = "")
+#K线图
+web=read_html(url,encoding="utf-8")
+pic=web %>%  html_nodes("#altcontentts") %>% html_text() #项目
+
+```
+# 资金流向
+
+### 历史交易数据
+```{r}
+url="http://quotes.money.163.com/trade/lsjysj_"
+year=rep(x = c(2014:2015),each=4)
+season=rep(x=(1:4),each=1,times=2)
+history_trade=function(url=url,stockNO="600000",year=year,season=season,path)
+        {
+        time=cbind(year,season)
+        #his_trade=data.frame(NA)
+        stockNO=as.character(stockNO)
+        for(i in 1:nrow(time)){
+        web=paste(url,stockNO,".html?year=",time[i,1],"&season=",time[i,2],sep="")
+        data=getURL(web,.encoding = "utf-8")
+        tab=readHTMLTable(doc =data,header = T,colClasses = "character", trim=T, stringsAsFactors = FALSE)
+        tmp=tab[[4]]
+        colnames(tmp)=tmp[1,]
+        tmp=tmp[-1,]
+        #his_trade[[i]]=tmp
+        if(i==1){
+                his_trade=tmp
+        }else{
+                his_trade=rbind(his_trade,tmp)
+        }
+        }
+
+       return(his_trade) 
+}
+a=history_trade()
+
+```
+
+
+### 历史资金流向
+```{r,captial_flow}
+web="http://quotes.money.163.com/trade/lszjlx_"
+capital_flow=function(url=web,stockNO="600000",page=c(0:5),path){
+        stockNO=as.character(stockNO)
+        for(i in page){
+        web=paste(url,stockNO,",",i,".html",sep="")
+        data=getURL(web,.encoding = "utf-8")
+        tab=readHTMLTable(doc =data,header = T,colClasses = "character", trim=T, stringsAsFactors = FALSE)
+        tmp=tab[[4]]
+        colnames(tmp)=tmp[1,]
+        tmp=tmp[-1,]
+        #his_trade[[i]]=tmp
+        if(i==0){
+                capital_flow=tmp
+        }else{
+                capital_flow=rbind(capital_flow,tmp)
+        }
+        }
+
+       return(capital_flow) 
+}
+a=capital_flow()
+```
+
+
+
+require(rJava)
+.jinit()
+jRobot <- .jnew("java/awt/Robot")
+pressButton<-function() {
+   jRobot$mousePress(J("java/awt/event/InputEvent")$BUTTON1_MASK)
+   jRobot$mouseRelease(J("java/awt/event/InputEvent")$BUTTON1_MASK)
+}
+pressButton()
+
+```{r}
+
+url="http://quotes.money.163.com/f10/zcfzb_601668.html#01c05"
+web=read_html(url,encoding="UTF-8")
+pro=web %>%  html_nodes(".td_1") %>% html_text() #项目
+pro=iconv(pro,'utf-8','gbk') #乱码，转换输出格式
+t=web %>%  html_nodes(".scr_table td:nth-child(1)") %>% html_text()
+tablehead=web %>%  html_nodes("th") %>% html_text()
+tablehead=iconv(tablehead,'utf-8','gbk') 
+tab=web %>%  html_nodes(".scr_table td") %>% html_text()
+```
+这样操作的话合并表格时很复杂的，改用XML
+## 用XML和getURL
+```{r}
+url="http://quotes.money.163.com/f10/zcfzb_601668.html#01c05"
+doc=xmlTreeParse(url,useInternal=TRUE) #报错，有未闭合的标签
+data=getURL(url,.encoding = "utf-8")
+tab=readHTMLTable(doc =data,header = T,colClasses = NULL, trim=T)
+df=cbind(tab[[4]][-1,],tab[[5]])
+```
+
+
+
+
+#公司简介
+```{r}
+url="http://quotes.money.163.com/f10/gszl_"
+company_intro=function(){
+        web=paste(url,stockNO,".html#01f02")
+        webpage=getURL(url = web,.encoding = "utf-8")
+        data=readHTMLTable(doc = webpage,header = T,colClasses = "character", trim=T, stringsAsFactors = FALSE)
+        
+        #公司基本信息
+        ComIntro=data[[4]]
+        colnames(ComIntro)=c("value","name","value","name")
+        ComIntro=rbind(ComIntro[,c(1,2)],ComIntro[,c(3,4)])
+        ComIntro=ComIntro[complete.cases(ComIntro),]
+        #业务收入比例
+        Bus_scale=data[[7]]
+        colnames(Bus_scale)=Bus_scale[1,]
+        Bus_scale=Bus_scale[-1,]
+}
+url="http://quotes.money.163.com/f10/gszl_601668.html#01f02"
+ComIntro=getURL(url,.encoding = "utf-8")
+tab=readHTMLTable(doc =ComIntro,header = T,colClasses = "character", trim=T, stringsAsFactors = FALSE)
+
+#资产负债表
+
+```
+
+
+
+#模拟鼠标点击界面里"下载数据"这个功能
+#实际上就是跳入到"http://quotes.money.163.com/service/zcfzb_601668.html"这个页面
+x=web %>%  html_nodes("#downloadData") %>% html_text() #项目
+iconv(x,"utf-8","gbk") #只返回“下载数据”这几个字
+
+url="http://quotes.money.163.com/service/zcfzb_601668.html"
+web=read_html(url,encoding="utf-8")
+
+

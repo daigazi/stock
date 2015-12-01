@@ -5,7 +5,7 @@ date: "2015年11月4日"
 output: html_document
 ---
 
-```{r,eval=FALSE}
+```{r,echo=F}
 library(knitr)
 opts_chunk$set(comment=NA, fig.width=6, fig.height=6,cache = TRUE)
 ```
@@ -17,7 +17,7 @@ library(XML)
 fileUrl <- "http://www.w3school.com.cn/example/xmle/simple.xml"
 doc <- xmlTreeParse(fileUrl,useInternal=TRUE) 
 rootNode <- xmlRoot(doc) #得到XML节点
-xmlName(rootNode)
+xmlName(rootNode) 
 names(rootNode) 
 rootNode[[1]]  #第一个names(rootNOde)标签里<food>的东西
 rootNode[[1]][[1]] #标签内第一行
@@ -48,7 +48,7 @@ xpathSApply(rootNode,"//price",xmlValue) #次一层节点
 xpathSApply(doc,"//food[@class='price']",xmlValue) #对文档操作而不是节点文档，次一层节点,为什么返回的是空列表
 xpathSApply(doc,"//food[@class]",xmlValue) #次一层节点
 ```
-# 案例
+这是因为此网页里food标签下无class属性，[此链接](http://my.oschina.net/u/1431368/blog/305311)所示的，就可以用。若上述网页里是<food class="12">noddle </food>这个形式，那么就xpathSApply(doc,"//food[@class]",xmlValue) 就可以取到"noodle"
 ```{r}
 fileUrl <- "http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens"
 doc <- htmlTreeParse(fileUrl,useInternal=TRUE)
@@ -62,9 +62,11 @@ teams
 利用xpathSApply函数读入东方财富网的股票信息
 ```{r,eval=F,echo=T,highlight=TRUE,error=TRUE}
 library(XML)
-fileUrl <- "http://quote.eastmoney.com/stocklist.html" #后缀是.html，因此应该用htmlTreeParse而不是xmlTreeParse
-doc <- xmlTreeParse(fileUrl,useInternal=TRUE,encoding = "GBK") #报错，这个网站出现nbsp（不间断间隔）、开始和结束标签不匹配等问题
-
+fileUrl <- "http://quote.eastmoney.com/stocklist.html" 
+doc <- htmlTreeParse(fileUrl,useInternal=TRUE,encoding = "GBK") #报错，这个网站出现nbsp（不间断间隔）、开始和结束标签不匹配等问题
+rootNode <- xmlRoot(doc) #得到XML节点
+xmlName(rootNode) 
+names(rootNode) 
 ```
 
 # XPath读取同花顺网页数据
@@ -77,7 +79,7 @@ doc <- htmlTreeParse(fileUrl,useInternal=TRUE,encoding = "GBK")  #注意是htmlT
 rootnode=xmlRoot(doc)
 li=xpathSApply(doc,"//li",xmlValue) #发现读取回来的文字是乱码
 li_vec=unlist(li)
-li_vec=iconv(x = li_vec,from = "GBK",to = "UTF-8") #x 字符串向量，还是乱码
+li_vec=iconv(x = li_vec,from = "gbk",to = "UTF-8") #x 字符串向量，还是乱码
 # library(stringi)
 # enc=stri_enc_detect(li_vec)  #检测文档编码
 # li_vecstri_encode(li_vec,enc,"UTF-8")  #把文档转换成UTF-8格式
@@ -128,4 +130,49 @@ zipcode[zipcode==21231,]
 
 ```
 
+## xml包几个常用的函数（可以在xpathSApply中应用）
 
+```{r}
+fileurl <- "http://www.w3school.com.cn/example/xmle/simple.xml"
+web=xmlTreeParse(file = fileurl,trim = T,useInternal=TRUE,encoding = "GBK")
+  #html网页用htmlTreeParse,xml用xmlTreeParse
+node=xmlRoot(web) #获取高水平的XML节点
+xmlName(node)  #获取顶层标签名
+xmlAttrs(node)
+```
+ 
+### XML按层次取值
+```{r}
+ fileName <- system.file("exampleData", "mtcars.xml", package="XML") 
+  doc <- xmlTreeParse(fileName)
+  node=xmlRoot(doc)  #做标签树
+  xmlName(node)  #顶层标签<dataset>
+  xmlAttrs(node) #顶层标签<dataset>里的值，在<dataset name="mtcars" numRecords="32" source="R Project">中返回字符串 "mtcars"        "32" "R Project" 
+  xmlGetAttr(node=node,name="numRecords")  #提取某个子属性的属性值
+  xmlChildren(node)  #次一层标签
+  xmlSize(xmlChildren(node))  #list的长度
+  xmlChildren(node)[[1]]  #次一层标签的第一个子标签
+  tmp=xmlChildren(node)[[20]]  #次一层标签的第20个子标签
+  xmlGetAttr(tmp,"id")  #属性id的值
+  xmlValue(tmp)  #值
+  xmlSize(tmp)  #list的长度
+  xmlChildren(xmlChildren(node)[[1]])  #次次层标签
+
+
+```
+### XML按标签取值
+* /node 顶层标签
+* //node 任意层标签
+* node[@attr-name] 取节点下某个属性的
+* node[@attr-name='bob'] 取节点下某个属性等于bob的值
+```{r}
+ fileName <- system.file("exampleData", "mtcars.xml", package="XML") 
+  doc <- xmlTreeParse(fileName)
+  node=xmlRoot(doc)
+  getNodeSet(doc = node,path = "/dataset")
+  getNodeSet(doc = node,path = "/dataset//record")
+  getNodeSet(doc = node,path = "//record")
+  getNodeSet(doc = node,path = "//variable") #可以直接取第三层的
+  getNodeSet(doc = node,path = "/dataset//record[@id]")
+  getNodeSet(doc = node,path = "/dataset//record[@id='Lotus Europa']")
+```

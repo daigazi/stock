@@ -4,7 +4,7 @@ author: "daigazi"
 date: "Friday, November 27, 2015"
 output: html_document
 ---
-```{r golbal-optional,message=FALSE,echo=FALSE,warning=FALSE}
+```{r golbal-optional,message=FALSE,echo=FALSE,warning=FALSE,eval=F}
 library(knitr)
 opts_knit$set(cache=T,eval=F,highlight=TRUE)
 ```
@@ -151,7 +151,52 @@ cat(d$value()[1]) #又记录了
 ```
 
 
+- 查看服务器端返回的头信息
+字符串形式
+```{r}
+url="http://www.baidu.com"
+d= debugGatherer()
+header=basicTextGatherer()
+temp=getURL(url,headerfunction=header$update)
+names(d$value())
+d$value()
+```
+
+另一种方式可以以列表的方式查看返回的头信息
+ 
+```{r}
+h=basicHeaderGatherer()  #一个是basicTextGatherer，一个是basicHeaderGatherer()
+txt=getURL(url,headerfunction=h$update)
+names(h$value())
+h$value()
+```
+
+- 伪装报头
+```{r}
+#设置报头
+myHttpheader <- c(
+"User-Agent"="Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.6) ",
+"Accept"="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+"Accept-Language"="en-us",
+"Connection"="keep-alive",
+"Accept-Charset"="GB2312,utf-8;q=0.7,*;q=0.7"
+)
+d=debugGatherer()
+temp <- getURL("http://cos.name/",httpheader=myHttpheader,debugfunction=d$update,verbose=T)
+cat(d$value()[1]) #服务器地址以及端口号
+cat(d$value()[3]) #提交服务器返回的头信息
+cat(d$value()[2]) #服务器返回的头信息
+
+```
+
 
 ## 2.getForm()
+
+--getFormParams 
+```{r}
+url="https://www.baidu.com/s?wd=wampserver%20&rsv_spt=1&rsv_iqid=0xc0a4ab5d000835c8&issp=1&f=8&rsv_bp=1&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&oq=Rcurl&rsv_t=964cIKjChH%2B886JRxoi3IOKsYqe3ANh2R6BKNlnL3uwGAxwK8NmnFi2GrJuOMew8k1ls&inputT=4626&rsv_pq=f88d935300008f12&rsv_sug3=133&rsv_sug1=72&rsv_sug2=0&rsv_sug4=4626"
+getFormParams(url)
+```
+
 
 ## 3.postForm()
