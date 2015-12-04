@@ -200,3 +200,50 @@ getFormParams(url)
 
 
 ## 3.postForm()
+
+
+## 4.getBinaryURL()
+是getURL()的变种，用来下载二进制文件。
+
+## 5.批量下载实现
+```{r}
+url="http://rfunction.com/code/1202/"
+web=getURL(url)
+tmp=strsplit(web,split = "<li><a href=\"")
+tmp=unlist(tmp)
+temp=strsplit(tmp,split="\"")
+temp=lapply(temp,function(x){x[[1]]})
+temp=unlist(temp)
+temp=temp[-c(1,2)]
+base_url="http://rfunction.com/code/1202/"
+for(i in 1:3){
+        url=paste(base_url,temp[i],sep="")
+        tmp=getBinaryURL(url = url)
+        note=file(temp[i],open = "wb")
+        writeBin(tmp, note)
+        close(note) #不关闭连接的话文件会出错，打不开，或者打开为空。
+}
+```
+
+上面这个问题的另一种操作方法
+```{r}
+library(XML)
+url="http://rfunction.com/code/1202/"
+web=getURL(url)
+web=htmlTreeParse(file = web,useInternalNodes = T,trim = T)
+node=xmlRoot(web)
+getNodeSet(doc = node,path = "//li") # //表示任意层
+xmlValue(getNodeSet(doc = node,path = "//li"))
+xmlValue(getNodeSet(doc = node,path = "//li[@bref]")) #报错        
+xmlAttrs(getNodeSet(doc = node,path = "//li[@bref]")) #报错
+xpathSApply(node,"//li",xmlValue)
+```
+
+
+上面这个问题的另一种操作方法
+```{r}
+library(rvest)
+url="http://rfunction.com/code/1202/"
+web=read_html(x = url) 
+tmp=web %>% html_nodes("li") %>% html_text()
+```

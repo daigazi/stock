@@ -9,14 +9,94 @@ library(knitr)
 opts_knit$set(cache=T,eval=T,echo=T)
 ```
 
+#股票列表
+```{r}
+url="http://bbs.10jqka.com.cn/codelist.html"
+#url="http://quote.eastmoney.com/stocklist.html"
+web=read_html(url,encoding = "GBK")
+stockName=web  %>% html_nodes(".bbsilst_wei3 a") %>% html_text() 
+stockName=stockName[-1]
+stockName=iconv(x = stockName,from = "utf-8",to = "GBK")
+write.csv(x=stockName,file="stockName.csv")
+
+url="http://bbs.10jqka.com.cn/codelist.html"
+#url="http://quote.eastmoney.com/stocklist.html"
+web=getURL(url = url,.encoding = "GBK")
+doc=htmlParse(web,useInternal=TRUE)
+node=xmlRoot(doc)
+#stock_list=xpathSApply(X =doc,"//li",xmlValue)
+# Error in UseMethod("xpathApply") : 
+#   no applicable method for 'xpathApply' applied to an object of class "character"
+stockName=sapply(getNodeSet(doc = doc,path = "//li"),xmlValue)
+stockName=iconv(x = stockName,from = "utf-8",to = "GBK")
+stockName=stockName[-c(1:40)]
+write.csv(x=stockName,file="stockName1.csv")
+```
+
+
 # 首页概览
 
+## 股票实时价格
+```{r}
+stockNO="601668"
+url="http://quotes.money.163.com/0"
+url=paste(url,stockNO,".html#01a02",sep="")
+web=read_html(x = url,encoding = "utf-8")
+realtimeprice=web >%> html_nodes(".bottom_line .cRed") >%> html_text()
+```
+
+# 财务分析
 ```{r,opts}
 wangyistock="http://quotes.money.163.com/f10/zcfzb_"
 stockNO="600000"
 page="01c05"
 url=paste(wangyistock,stockNO,".html#",page,sep = "")
+
+
+
 ```
+
+
+## 主要财务指标
+```{r}
+#http://quotes.money.163.com/service/zycwzb_600000.html?type=report
+url_mainfinance="http://quotes.money.163.com/service/zycwzb_"
+stockNO="600000"
+url_mainfinance=paste(url_mainfinance,stockNO,".html?type=report",sep="")
+mainfinance=
+        tmp=getBinaryURL(url = url_mainfinance)
+        note=file(paste("~/data/",stockNO,".csv",sep=""),open = "wb")
+        writeBin(tmp, note)
+        close(note) #不关闭连接的话文件会出错，打不开，或者打开为空。
+```
+
+
+## 盈利能力
+```{r}
+http://quotes.money.163.com/service/zycwzb_601668.html?type=report&part=ylnl
+```
+## 偿债能力
+```{r}
+http://quotes.money.163.com/service/zycwzb_601668.html?type=report&part=chnl
+```
+## 成长能力
+```{r}
+http://quotes.money.163.com/service/zycwzb_601668.html?type=report&part=cznl
+```
+## 营运能力
+```{r}
+http://quotes.money.163.com/service/zycwzb_601668.html?type=report&part=yynl
+```
+## 业绩预告
+```{r}
+http://quotes.money.163.com/f10/yjyg_601668.html#01c03
+```
+## 财务报表摘要
+
+```{r}
+http://quotes.money.163.com/service/cwbbzy_601668.html
+```
+
 
 ```{r}
 page="01c05"

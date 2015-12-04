@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"dzdp\"\nauthor: \"daigazi\"\ndate: \"Wednesday, December 02, 2015\"\noutput: html_document\n---\n\n\n```{r,echo=FALSE,message=FALSE,error=FALSE,eval=TRUE}\nlibrary(rvest)\nlibrary(RCurl)\nlibrary(XML)\nlibrary(knitr)\nopts_knit$set(cache=T,eval=T,echo=T)\n```\nbase64()\n```{r}\nurl=\"http://www.dianping.com/movieindex/fuzhou\"\ntemp=getURL(url = url,.encoding = \"utf-8\")\n#发现读取的网页信息很少，被加密处理了。\nmyheader= c(\n\"User-Agent\"=\"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.6) \",\n\"Accept\"=\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\",\n\"Accept-Language\"=\"en-us\",\n\"Connection\"=\"keep-alive\",\n\"Accept-Charset\"=\"GB2312,utf-8;q=0.7,*;q=0.7\"\n)\ntemp=getURL(url = url,.encoding = \"utf-8\",httpheader=myheader)\ndoc=xmlParse(file = temp,trim = T,useInternal=TRUE) #报错\nweb=read_html(x = temp)\ntmp=web %>% html_nodes(\"div.ui.li.h6\") %>% html_text()\n```\n\n",
+    "created" : 1449035497057.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "488615700",
+    "id" : "6E4342F3",
+    "lastKnownWriteTime" : 1449052642,
+    "path" : "D:/Git/stock/dzdp.Rmd",
+    "project_path" : "dzdp.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}
